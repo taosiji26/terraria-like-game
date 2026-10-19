@@ -1,0 +1,471 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    cursor: crosshair;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ===== 加载界面 ===== */
+#loading-screen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-content h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #4ade80;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.loading-content p {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 20px;
+    background: #333;
+    border: 2px solid #555;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+#loading-progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    transition: width 0.2s;
+}
+
+/* ===== 主菜单 ===== */
+#main-menu {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 90;
+}
+
+.menu-content {
+    text-align: center;
+    padding: 40px;
+}
+
+.game-title {
+    font-size: 72px;
+    color: #4ade80;
+    text-shadow: 4px 4px 0 #000, -2px -2px 0 #166534;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+}
+
+.game-subtitle {
+    font-size: 20px;
+    color: #aaa;
+    margin-bottom: 40px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-btn {
+    padding: 12px 40px;
+    font-size: 20px;
+    background: linear-gradient(180deg, #4ade80, #22c55e);
+    color: #fff;
+    border: 3px solid #166534;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    text-shadow: 1px 1px 0 #166534;
+    min-width: 200px;
+}
+
+.menu-btn:hover {
+    background: linear-gradient(180deg, #6ee7b7, #4ade80);
+    transform: translateY(-2px);
+}
+
+.menu-btn:active {
+    transform: translateY(1px);
+}
+
+.menu-btn.small {
+    padding: 8px 20px;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+#how-to-play {
+    margin-top: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    text-align: left;
+}
+
+#how-to-play h3 {
+    color: #4ade80;
+    margin: 15px 0 10px;
+}
+
+#how-to-play h3:first-child {
+    margin-top: 0;
+}
+
+#how-to-play ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#how-to-play li {
+    margin: 6px 0;
+    color: #ddd;
+    font-size: 14px;
+}
+
+#how-to-play b {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 1px 6px;
+    border-radius: 3px;
+}
+
+#how-to-play .menu-btn {
+    margin-top: 15px;
+}
+
+/* ===== HUD ===== */
+#hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+}
+
+#top-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    pointer-events: none;
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.stat-icon {
+    font-size: 18px;
+}
+
+.stat-icon.heart { color: #ef4444; }
+.stat-icon.food { color: #f59e0b; }
+
+.bar-bg {
+    width: 120px;
+    height: 14px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    transition: width 0.3s;
+}
+
+.bar-fill.health {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.bar-fill.hunger {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.stat-text {
+    font-size: 12px;
+    color: #fff;
+    min-width: 45px;
+}
+
+#time-display {
+    margin-left: auto;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#time-icon {
+    font-size: 18px;
+}
+
+/* ===== 物品栏 ===== */
+#hotbar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+#hotbar-slots {
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.hotbar-slot {
+    width: 52px;
+    height: 52px;
+    background: rgba(60, 60, 60, 0.8);
+    border: 2px solid #555;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hotbar-slot.active {
+    border-color: #fbbf24;
+    background: rgba(80, 70, 30, 0.9);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.slot-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.slot-count {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 11px;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    font-weight: bold;
+}
+
+.slot-key {
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    font-size: 9px;
+    color: #aaa;
+}
+
+/* ===== 制作菜单 ===== */
+#crafting-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(20, 20, 30, 0.95);
+    border: 3px solid #4ade80;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 400px;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    pointer-events: auto;
+    box-shadow: 0 0 30px rgba(74, 222, 128, 0.3);
+}
+
+#crafting-menu h2 {
+    color: #4ade80;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#crafting-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.craft-item {
+    background: rgba(60, 60, 60, 0.8);
+    border: 2px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.craft-item:hover {
+    border-color: #fbbf24;
+    background: rgba(80, 70, 30, 0.8);
+}
+
+.craft-item.cant-craft {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.craft-item.cant-craft:hover {
+    border-color: #555;
+    background: rgba(60, 60, 60, 0.8);
+}
+
+.craft-icon {
+    font-size: 24px;
+    width: 32px;
+    text-align: center;
+}
+
+.craft-info {
+    flex: 1;
+    font-size: 12px;
+}
+
+.craft-name {
+    color: #fff;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.craft-cost {
+    color: #aaa;
+    font-size: 10px;
+}
+
+.craft-cost .have {
+    color: #4ade80;
+}
+
+.craft-cost .need {
+    color: #ef4444;
+}
+
+#btn-close-crafting {
+    width: 100%;
+}
+
+/* ===== 提示信息 ===== */
+#message-box {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fbbf24;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ===== 死亡画面 ===== */
+#death-screen {
+    position: absolute;
+    inset: 0;
+    background: rgba(50, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    pointer-events: auto;
+    z-index: 80;
+}
+
+#death-screen h1 {
+    font-size: 64px;
+    color: #ef4444;
+    text-shadow: 3px 3px 0 #000;
+}
+
+#death-info {
+    font-size: 20px;
+    color: #ccc;
+}
+
+#death-screen .menu-btn {
+    background: linear-gradient(180deg, #ef4444, #dc2626);
+    border-color: #991b1b;
+    text-shadow: 1px 1px 0 #991b1b;
+}
+
+#btn-quit {
+    background: linear-gradient(180deg, #6b7280, #4b5563) !important;
+    border-color: #374151 !important;
+}
